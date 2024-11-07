@@ -1,8 +1,6 @@
+@file:Suppress("UnstableApiUsage")
+
 import info.solidsoft.gradle.pitest.PitestPluginExtension
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
-import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
-import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
 
 plugins {
   kotlin("jvm") version "2.0.21"
@@ -17,13 +15,6 @@ repositories {
 dependencies {
   implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
-  testImplementation(platform("org.junit:junit-bom:5.9.3"))
-  testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-  testImplementation("org.junit.jupiter:junit-jupiter-api")
-  testImplementation("org.junit.jupiter:junit-jupiter-params")
-
-  testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.28.1")
 }
 
 java {
@@ -38,14 +29,25 @@ kotlin {
   }
 }
 
-tasks.withType<Test> {
-  useJUnitPlatform()
-  testLogging {
-    events(PASSED, SKIPPED, FAILED)
-    exceptionFormat = FULL
-    showExceptions = true
-    showCauses = true
-    showStackTraces = true
+testing {
+  suites {
+    val integrationTest by registering(JvmTestSuite::class) {
+      testType = TestSuiteType.INTEGRATION_TEST
+      dependencies {
+        implementation(project())
+        implementation(platform("org.junit:junit-bom:5.9.3"))
+        runtimeOnly("org.junit.jupiter:junit-jupiter-engine")
+        implementation("org.junit.jupiter:junit-jupiter-api")
+        implementation("org.junit.jupiter:junit-jupiter-params")
+
+        implementation("com.willowtreeapps.assertk:assertk-jvm:0.28.1")
+      }
+      sources {
+        kotlin {
+          setSrcDirs(listOf("src/integrationTest/kotlin"))
+        }
+      }
+    }
   }
 }
 
