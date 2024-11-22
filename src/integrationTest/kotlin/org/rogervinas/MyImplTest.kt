@@ -17,7 +17,6 @@ internal class MyImplTest {
       "11, 47, B is greater than A",
       "5, 5, A and B are equal",
       "1, 1, A and B are equal",
-      "1, 1, A and B are equal",
     ],
   )
   fun `should do something`(
